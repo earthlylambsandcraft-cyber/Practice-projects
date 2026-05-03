@@ -1,9 +1,6 @@
 // @ts-check
 
-
 const { chromium } = require('@playwright/test');
-const axios = require('axios');
-
 
 (async () => {
     const browser = await chromium.launch({ headless: false, slowMo:1700 });
@@ -52,40 +49,15 @@ const axios = require('axios');
 
         console.log('✅ SUCCESS: Order completed & screenshot saved');
 
-        await axios.post("http://localhost:5678/webhook-test/Buyflow.e2e", {
-            status: "SUCCESS",
-            product:"Sauce Demo Item",
-            timestamp: new Date().toISOString()
+    } catch(error) {
+        console.log('ERROR', error);
 
-            });
+        //failure proof
+        await page.screenshot({
+            path: `Snapshots/error_${timestamp}.png`,
+            fullPage: true
+        });
 
-    } catch (error) {
-    if (axios.isAxiosError(error)) {
-        console.error('ERROR MESSAGE:', error.message);
-        console.error('STACK TRACE:\n', error.stack);
-
-        if (error.response) {
-            console.error('RESPONSE DATA:', error.response.data);
-            console.error('STATUS:', error.response.status);
-        }
-
-        if (error.request) {
-            console.error('NO RESPONSE RECEIVED');
-        }
-    } else if (error instanceof Error) {
-        console.error('GENERIC ERROR:', error.message);
-    } else {
-        console.error('UNKNOWN ERROR:', error);
-    }
-
-    await page.screenshot({
-        path: `Snapshots/error_${timestamp}.png`,
-        fullPage: true
-    });
-
-
-
-        
     } finally {
 
     await browser.close();
